@@ -45,11 +45,16 @@ jobs:
 
       - name: 4. Grant execute permission for gradlew
         run: chmod +x gradlew
+        
+      - name: 4.1 Setup Tmate Debug Session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
 
-      - name: 4.1. Create local.properties
+      - name: 4.2. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: 4.2. Safe Android SDK Setup & Licenses
+      - name: 4.3. Safe Android SDK Setup & Licenses
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
           mkdir -p $ANDROID_HOME/licenses
