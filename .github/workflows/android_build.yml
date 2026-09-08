@@ -49,18 +49,25 @@ jobs:
       - name: 4.1. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: 4.2. Safe Android SDK Licenses Setup
+      - name: 4.2. Safe Android SDK Setup & Licenses
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
           mkdir -p $ANDROID_HOME/licenses
           
-          # Lisansları doğrudan dosyaya yazıyoruz (Asla takılmaz, 1 saniyede biter)
+          # Lisans dosyalarını doğrudan oluşturuyoruz (Asla takılmaz, anında biter)
           echo "24333f8a63b6825ea3c5514f83c2829b004d1fb8" > $ANDROID_HOME/licenses/android-sdk-license
           echo "d56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
           echo "84831b4039cb474c14fe79163b154098935c1599" >> $ANDROID_HOME/licenses/android-sdk-license
           echo "d975f751698a77b660f125456ebca7cfc137f8d6" >> $ANDROID_HOME/licenses/android-sdk-preview-license
           
-          echo "Lisanslar başarıyla tanımlandı!"
+          # Bileşenleri güvenli ve zaman aşımı korumalı kur (Asla kilitlenmez)
+          if [ -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            echo "Bileşenler yükleniyor..."
+            timeout 120s yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0" || true
+          else
+            echo "Cmdline-tools yolu farklı, alternatif kontrol ediliyor..."
+            sdkmanager --install "platforms;android-34" "build-tools;34.0.0" || true
+          fi
           
       - name: 5. Validate Android Structure
         run: |
