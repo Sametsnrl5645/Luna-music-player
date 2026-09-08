@@ -64,16 +64,6 @@ jobs:
           cat ngrok.log
         shell: bash
           
-          # 2. Token'ı tanımla
-          ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
-          
-          # 3. SSH portunu (22) dışarı aç ve arka planda çalıştır
-          ngrok tcp 22 --log=stdout &
-          
-          echo "Ngrok tüneli başlatıldı. Bağlantı adresi loglarda görünecektir."
-          sleep 5
-        shell: bash
-          
       - name: 4.2. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
