@@ -46,12 +46,12 @@ jobs:
       - name: 4. Grant execute permission for gradlew
         run: chmod +x gradlew
         
-      - name: 4.1 Setup Tmate Debug Session
-        uses: mxschmitt/action-tmate@v3
+      - name: 4.1 Setup Ngrok Debug Session
+        uses: ihmoral/action-ngrok@v1
         with:
-          limit-access-to-actor: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          protocol: 'tcp'
+          port: 22
+          token: ${{ secrets.NGROK_AUTHTOKEN }}
 
       - name: 4.2. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
