@@ -49,13 +49,11 @@ jobs:
       - name: 4.1. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: 4.2. Accept Android SDK Licenses
+      - name: 4.2. Accept Android SDK Licenses & Install Components
         run: |
-          yes | sdkmanager --licenses || true
-
-      - name: 4.3. Install Android SDK Components
-        run: |
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: 5. Validate Android Structure
         run: |
