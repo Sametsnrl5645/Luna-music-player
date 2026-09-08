@@ -50,6 +50,8 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 4.2. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
