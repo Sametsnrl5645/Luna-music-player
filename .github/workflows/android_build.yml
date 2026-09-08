@@ -56,10 +56,10 @@ jobs:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ORG_GRADLE_PROJECT_android_useAndroidX: true
 
-      - name: 7. Find and Show APK Files
+      - name: 7. Find and Show Build Outputs
         run: |
-          echo "Aranıyor..."
-          find . -name "*.apk"
+          echo "app/build altındaki tüm dosyalar taranıyor..."
+          find app/build -maxdepth 4
 
       - name: 8. Upload APK Artifact
         uses: actions/upload-artifact@v4
