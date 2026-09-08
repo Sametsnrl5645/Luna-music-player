@@ -65,7 +65,10 @@ jobs:
           echo "AndroidManifest.xml doğrulandı."
 
       - name: 6. Build APK with Gradle
-        run: ./gradlew clean :app:assembleDebug --stacktrace --info
+        run: |
+          ./gradlew clean :app:assembleDebug --stacktrace --info
+          echo "Build tamamlandı. Klasör yapısı kontrol ediliyor:"
+          find app/build -name "*.apk"
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ORG_GRADLE_PROJECT_android_useAndroidX: true
