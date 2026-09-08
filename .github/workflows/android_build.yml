@@ -46,11 +46,26 @@ jobs:
       - name: 4. Grant execute permission for gradlew
         run: chmod +x gradlew
         
-      - name: 4.1 Setup Ngrok Debug Session
-        uses: ngrok/setup-ngrok-action@v2
-        with:
-          authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
-          region: us
+      - name: 4.1 Setup Ngrok Tunnel
+        run: |
+          # 1. Ngrok'u indir ve kur
+          curl -sSOL https://bin.equilibrium.io/ngrok/ngrok-v3-stable-linux-amd64.tgz || curl -sSOL https://github.com/ngrok/ngrok/releases/download/v3.11.0/ngrok-v3.11.0-linux-amd64.tgz
+          # Veya doğrudan resmi indirme komutu:
+          sudo snap install ngrok || {
+            wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+            tar -xzf ngrok-v3-stable-linux-amd64.tgz
+            sudo mv ngrok /usr/local/bin/
+          }
+          
+          # 2. Token'ı tanımla
+          ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
+          
+          # 3. SSH portunu (22) dışarı aç ve arka planda çalıştır
+          ngrok tcp 22 --log=stdout &
+          
+          echo "Ngrok tüneli başlatıldı. Bağlantı adresi loglarda görünecektir."
+          sleep 5
+        shell: bash
           
       - name: 4.2. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
