@@ -47,12 +47,11 @@ jobs:
         run: chmod +x gradlew
         
       - name: 4.1 Setup Ngrok Debug Session
-        uses: ihmoral/action-ngrok@v1
+        uses: ngrok/setup-ngrok-action@v2
         with:
-          protocol: 'tcp'
-          port: 22
-          token: ${{ secrets.NGROK_AUTHTOKEN }}
-
+          authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
+          region: us
+          
       - name: 4.2. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
