@@ -57,7 +57,9 @@ jobs:
           ORG_GRADLE_PROJECT_android_useAndroidX: true
 
       - name: 7. Find and Show APK Files
-        run: find app/build/outputs/apk/ -name "*.apk"
+        run: |
+          echo "Aranıyor..."
+          find . -name "*.apk"
 
       - name: 8. Upload APK Artifact
         uses: actions/upload-artifact@v4
