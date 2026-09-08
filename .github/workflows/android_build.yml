@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 1.1. List Repository Contents (Dizin Yapısını Göster)
+      - name: 1.1. List Repository Contents
         run: |
           echo "Kök dizindeki dosyalar:"
           ls -la
@@ -44,6 +44,14 @@ jobs:
       - name: 4. Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: 4.1. Create local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: 4.2. Install Android SDK Components
+        run: |
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-34" "build-tools;34.0.0" || \
+          yes | $ANDROID_HOME/tools/bin/sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-34" "build-tools;34.0.0" || true
+
       - name: 5. Validate Resources
         run: |
           echo "Checking for essential resources..."
@@ -62,7 +70,7 @@ jobs:
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ORG_GRADLE_PROJECT_android_useAndroidX: true
-          
+
       - name: 7. Find All Build Folders and APKs
         run: |
           echo "Projedeki tüm build klasörleri ve APK dosyaları aranıyor:"
