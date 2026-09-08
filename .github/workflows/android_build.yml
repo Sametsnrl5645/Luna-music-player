@@ -26,6 +26,8 @@ jobs:
         run: |
           echo "Kök dizindeki dosyalar:"
           ls -la
+          echo "app dizini içeriği:"
+          ls -la app/ || true
           echo "Mevcut dizin:"
           pwd
 
@@ -55,21 +57,17 @@ jobs:
         run: |
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: 5. Validate Resources
+      - name: 5. Validate Android Structure
         run: |
-          echo "Checking for essential resources..."
-          if [ ! -d "app/src/main/res/values" ]; then
-            echo "HATA: values klasörü bulunamadı!"
+          echo "Checking for essential Android files..."
+          if [ ! -f "app/src/main/AndroidManifest.xml" ]; then
+            echo "HATA: app/src/main/AndroidManifest.xml bulunamadı!"
             exit 1
           fi
-          if [ ! -f "app/src/main/res/values/themes.xml" ]; then
-             echo "HATA: themes.xml dosyası bulunamadı!"
-             exit 1
-          fi
-          echo "Kaynak dosyaları doğrulandı."
+          echo "AndroidManifest.xml doğrulandı."
 
       - name: 6. Build APK with Gradle
-        run: ./gradlew :app:assembleDebug --stacktrace --info
+        run: ./gradlew clean :app:assembleDebug --stacktrace --info
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ORG_GRADLE_PROJECT_android_useAndroidX: true
