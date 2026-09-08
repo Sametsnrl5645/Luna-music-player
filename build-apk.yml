@@ -1,0 +1,33 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Depoyu Koda Göre Klonla
+      uses: actions/checkout@v4
+
+    - name: Java (JDK) Ortamını Kur
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Gradle İçin Çalıştırma Yetkisi Ver
+      run: chmod +x gradlew
+
+    - name: APK Derle (Debug)
+      run: ./gradlew assembleDebug
+
+    - name: Üretilen APK Dosyasını Kaydet (Artifact)
+      uses: actions/upload-artifact@v4
+      with:
+        name: SabrinaMusicPlayer-Debug
+        path: app/build/outputs/apk/debug/app-debug.apk
