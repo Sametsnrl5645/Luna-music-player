@@ -51,7 +51,7 @@ jobs:
           echo "Kaynak dosyaları doğrulandı."
 
       - name: 6. Build APK with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew build --stacktrace --info
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ORG_GRADLE_PROJECT_android_useAndroidX: true
