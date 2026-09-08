@@ -52,6 +52,9 @@ jobs:
       - name: 4.2. Accept Android SDK Licenses & Install Components
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
+          mkdir -p $ANDROID_HOME/licenses
+          echo "24333f8a63b6825ea3c5514f83c2829b004d1fb8" > $ANDROID_HOME/licenses/android-sdk-license
+          echo "d56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
