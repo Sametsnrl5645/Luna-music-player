@@ -22,15 +22,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 1.1. List Repository Contents (Dizin Yapısını Göster)
+      - name: 1.1. Debug - Find all APKs in workspace
         run: |
-          echo "Kök dizindeki dosyalar:"
-          ls -la
-          echo "app dizini içeriği:"
+          echo "Workspace içindeki tüm APK dosyaları aranıyor:"
+          find . -name "*.apk"
+          echo "App klasörünün içeriği:"
           ls -la app/ || true
-          echo "Mevcut dizin:"
-          pwd
-
+          echo "App build klasörünün içeriği:"
+          ls -la app/build/ || true
+          
       - name: 2. Set up JDK
         uses: actions/setup-java@v5
         with:
