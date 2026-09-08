@@ -49,30 +49,18 @@ jobs:
       - name: 4.1. Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: 4.2. Akıllı Otomatik Lisans Onaylayıcı ve Kurulum
+      - name: 4.2. Safe Android SDK Licenses Setup
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
+          mkdir -p $ANDROID_HOME/licenses
           
-          # sdkmanager komutunu sürekli 'y' (yes) göndererek çalıştıran akıllı fonksiyon
-          auto_accept_sdk() {
-            local cmd="$1"
-            while true; do
-              echo -ne "y\n"
-            done | $cmd
-          }
+          # Lisansları doğrudan dosyaya yazıyoruz (Asla takılmaz, 1 saniyede biter)
+          echo "24333f8a63b6825ea3c5514f83c2829b004d1fb8" > $ANDROID_HOME/licenses/android-sdk-license
+          echo "d56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
+          echo "84831b4039cb474c14fe79163b154098935c1599" >> $ANDROID_HOME/licenses/android-sdk-license
+          echo "d975f751698a77b660f125456ebca7cfc137f8d6" >> $ANDROID_HOME/licenses/android-sdk-preview-license
           
-          # Lisansları akıllı döngüyle kabul et
-          if [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
-            echo "Lisanslar otomatik onaylanıyor..."
-            auto_accept_sdk "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses" || true
-            
-            echo "Android 34 ve Build-Tools kuruluyor..."
-            auto_accept_sdk "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager 'platforms;android-34' 'build-tools;34.0.0'"
-          else
-            echo "Cmdline-tools bulunamadı, alternatif yol deneniyor..."
-            auto_accept_sdk "sdkmanager --licenses" || true
-            auto_accept_sdk "sdkmanager 'platforms;android-34' 'build-tools;34.0.0'"
-          fi
+          echo "Lisanslar başarıyla tanımlandı!"
           
       - name: 5. Validate Android Structure
         run: |
