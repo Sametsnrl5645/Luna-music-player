@@ -20,15 +20,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Install Gradle Manually
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build APK with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
 
-      - name: Find and Show APK Files (Debug)
+      - name: Find and Show APK Files
         run: find app/build/outputs/ -name "*.apk"
 
       - name: Upload APK Artifact
