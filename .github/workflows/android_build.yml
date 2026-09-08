@@ -58,11 +58,11 @@ jobs:
           echo "Kaynak dosyaları doğrulandı."
 
       - name: 6. Build APK with Gradle
-        run: ./gradlew build --stacktrace --info
+        run: ./gradlew :app:assembleDebug --stacktrace --info
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ORG_GRADLE_PROJECT_android_useAndroidX: true
-
+          
       - name: 7. Find and Show Build Outputs
         run: |
           echo "app/build altındaki tüm dosyalar taranıyor..."
