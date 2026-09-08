@@ -1,9 +1,21 @@
+// Kök build.gradle (Groovy veya Kotlin DSL uyumlu temel yapı)
 buildscript {
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
     dependencies {
         classpath("com.android.tools.build:gradle:8.2.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
