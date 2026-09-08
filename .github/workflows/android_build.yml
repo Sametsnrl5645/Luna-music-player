@@ -22,6 +22,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 1.1. List Repository Contents (Dizin Yapısını Göster)
+        run: |
+          echo "Kök dizindeki dosyalar:"
+          ls -la
+          echo "Mevcut dizin:"
+          pwd
+
       - name: 2. Set up JDK
         uses: actions/setup-java@v5
         with:
