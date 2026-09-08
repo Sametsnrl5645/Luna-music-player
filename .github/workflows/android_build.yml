@@ -48,14 +48,21 @@ jobs:
         
       - name: 4.1 Setup Ngrok Tunnel
         run: |
-          # 1. Ngrok'u indir ve kur
-          curl -sSOL https://bin.equilibrium.io/ngrok/ngrok-v3-stable-linux-amd64.tgz || curl -sSOL https://github.com/ngrok/ngrok/releases/download/v3.11.0/ngrok-v3.11.0-linux-amd64.tgz
-          # Veya doğrudan resmi indirme komutu:
-          sudo snap install ngrok || {
-            wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-            tar -xzf ngrok-v3-stable-linux-amd64.tgz
-            sudo mv ngrok /usr/local/bin/
-          }
+          # 1. Resmi ngrok binary dosyasını indir ve aç
+          wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+          tar -xzf ngrok-v3-stable-linux-amd64.tgz
+          sudo mv ngrok /usr/local/bin/
+          
+          # 2. Token'ı tanımla
+          ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
+          
+          # 3. SSH portunu dışarı aç ve adresin loglara basılmasını sağla
+          nohup ngrok tcp 22 > ngrok.log 2>&1 &
+          
+          echo "Ngrok tüneli logları:"
+          sleep 5
+          cat ngrok.log
+        shell: bash
           
           # 2. Token'ı tanımla
           ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
