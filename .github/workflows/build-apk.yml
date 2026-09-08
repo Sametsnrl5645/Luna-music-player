@@ -1,41 +1,89 @@
-name: Android Build
+name: Android Build & Release
 
 on:
+  # Tetikleyici: main branch'ine push veya PR yapıldığında çalışır.
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+  # İzin: İş akışını elle başlatabilme özelliği ekler.
+  workflow_dispatch:
+
 jobs:
   build:
+    # İşin çalışacağı ortam: En son Ubuntu sunucusu.
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    # Hata önleme stratejisi: Hangi Java/Gradle sürümünün kullanılacağını garanti altına al.
+    strategy:
+      matrix:
+        # Projedeki AGP 8.2.0 ve Kotlin 1.9.0 ile uyumlu en stabil sürüm
+        gradle-version: ['8.4']
+        java-version: ['17']
 
-      - name: Set up JDK 17
+    steps:
+      - name: 1. Checkout Repository (Depoyu Kopyala)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Tam git geçmişini alır (sürümleme için önerilir)
+
+      - name: 2. Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'temurin' # Eclipse Temurin (Adoptium) en stabil OpenJDK sağlayıcısıdır.
+          java-version: ${{ matrix.java-version }}
+          cache: 'gradle' # Gradle önbelleğini etkinleştirir, derlemeyi hızlandırır.
 
-      - name: Set up Gradle 8.4
+      - name: 3. Setup Gradle ${{ matrix.gradle-version }}
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: '8.4'
+          gradle-version: ${{ matrix.gradle-version }}
 
-      - name: Build APK with Gradle
-        run: gradle assembleDebug
+      - name: 4. Grant execute permission for gradlew (Linux izinlerini doğrula)
+        run: chmod +x gradlew
+
+      - name: 5. Validate Resources (Kaynak Dosya Kontrolü - Kritik)
+        # "AAPT: error: resource ... not found" hatalarını önler.
+        # Bu adım, kritik kaynak dosyalarının (launcher ikonları ve themes.xml)
+        # varlığını derleme öncesinde doğrular.
+        run: |
+          echo "Checking for essential resources..."
+          REQUIRED_DIRS=("app/src/main/res/values" "app/src/main/res/mipmap-hdpi" "app/src/main/res/mipmap-xxxhdpi")
+          
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ ! -d "$$dir" ]; then
+              echo "HATA: Gerekli klasör bulunamadı: $$dir"
+              exit 1 # Hata vererek süreci durdurur.
+            fi
+          done
+          
+          if [ ! -f "app/src/main/res/values/themes.xml" ]; then
+             echo "HATA: app/src/main/res/values/themes.xml dosyası bulunamadı! Lütfen oluşturun."
+             exit 1
+          fi
+          echo "Kaynak dosyaları doğrulandı."
+
+      - name: 6. Build APK with Gradle
+        # Doğrudan sistemin bildiği gradlew komutunu çalıştırır.
+        run: ./gradlew assembleDebug --stacktrace
         env:
+          # Android SDK yolunu belirtir.
           ANDROID_HOME: /usr/local/lib/android/sdk
+          # Depo önceliklendirme hatasını önlemek için anahtar:
+          # Bu ayar, settings.gradle içindeki depo konfigürasyonlarının
+          # build.gradle dosyaları tarafından geçersiz kılınmasını önler.
+          ORG_GRADLE_PROJECT_android_useAndroidX=true
 
-      - name: Find and Show APK Files
-        run: find app/build/outputs/ -name "*.apk"
+      - name: 7. Find and Show APK Files
+        # outputs klasörünün oluşup oluşmadığını kontrol eder.
+        run: find app/build/outputs/apk/ -name "*.apk"
 
-      - name: Upload APK Artifact
+      - name: 8. Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/**/*.apk
-          if-no-files-found: error
+          # Üretilen APK'ya verilen isim
+          name: LunaAI-Music-Player-Debug
+          # APK dosyasının yolu (Wildcard kullanarak debug klasörüne gider)
+          path: app/build/outputs/apk/debug/
+          if-no-files-found: error # Dosya bulunamazsa fail olur.
